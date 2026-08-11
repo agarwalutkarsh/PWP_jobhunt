@@ -57,7 +57,59 @@ def parse_json(raw: str) -> Any:
             return json.loads(blob)
         except json.JSONDecodeError:
             continue
+
+    # Some models truncate at the very end of a JSON reply. If the playback is
+    # cut off after the last complete element of a top-level array, try to
+    # salvage the valid prefix.
+    recovered = _recover_truncated_json(cleaned)
+    if recovered is not None:
+        return recovered
+
     raise ValueError(f"could not parse JSON from model reply: {cleaned[:300]!r}")
+
+
+def _recover_truncated_json(raw: str) -> Any | None:
+    if raw.startswith("["):
+        return _recover_truncated_array(raw)
+    return None
+
+
+def _recover_truncated_array(raw: str) -> Any | None:
+    in_string = False
+    escaped = False
+    depth = 0
+    last_complete_end: int | None = None
+
+    for i, ch in enumerate(raw):
+        if in_string:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            continue
+
+        if ch == '"':
+            in_string = True
+        elif ch == '[' or ch == '{':
+            depth += 1
+        elif ch == ']' or ch == '}':
+            depth -= 1
+            if depth == 1:
+                last_complete_end = i
+        elif ch == ',' and depth == 1:
+            # A completed array element may have ended just before this comma.
+            pass
+
+    if last_complete_end is None:
+        return None
+
+    candidate = raw[:last_complete_end + 1] + "]"
+    try:
+        return json.loads(candidate)
+    except json.JSONDecodeError:
+        return None
 
 
 def _as_list(payload: Any) -> list[dict]:

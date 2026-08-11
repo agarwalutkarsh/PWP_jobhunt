@@ -186,6 +186,15 @@ def test_fenced_reply_with_preamble_still_scores(capsys):
     assert jobs[0].reason == "strong Go match"
 
 
+def test_parse_json_recovers_truncated_array():
+    raw = ('[{'
+           '"job_id": "greenhouse:acme:0", "score": 8, "reason": "ok"}, '
+           '{"job_id": "greenhouse:acme:1", "score":')
+    assert llm.parse_json(raw) == [
+        {"job_id": "greenhouse:acme:0", "score": 8, "reason": "ok"}
+    ]
+
+
 # ------------------------------------------------------- failure modes -----
 
 def test_one_bad_batch_warns_and_the_run_continues(capsys):

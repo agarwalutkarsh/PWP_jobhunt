@@ -23,16 +23,18 @@
 # noise and makes the prefilter counts impossible to reason about.
 
 companies:
-  - {ats: greenhouse, slug: stripe,      name: Stripe}
-  - {ats: greenhouse, slug: databricks,  name: Databricks}
-  - {ats: greenhouse, slug: cloudflare,  name: Cloudflare}
-  - {ats: greenhouse, slug: figma,       name: Figma}
-  - {ats: greenhouse, slug: dropbox,     name: Dropbox}
-  - {ats: greenhouse, slug: coinbase,    name: Coinbase}
-  - {ats: greenhouse, slug: reddit,      name: Reddit}
-  - {ats: lever,      slug: voleon,      name: Voleon}
-
-  - {ats: ashby,      slug: openai,      name: OpenAI}
-  - {ats: ashby,      slug: ramp,        name: Ramp}
-  - {ats: ashby,      slug: linear,      name: Linear}
-  - {ats: ashby,      slug: vanta,       name: Vanta}
+- {ats: ashby, slug: SigNoz, name: SigNoz}
+- {ats: ashby, slug: sarvam, name: Sarvam AI}
+- {ats: ashby, slug: weave, name: Weave}
+- {ats: ashby, slug: savvymoney, name: SavvyMoney}
+- {ats: greenhouse, slug: pay2dc, name: PayPay India}
+- {ats: greenhouse, slug: olivai, name: Oliv AI}
+- {ats: greenhouse, slug: postman, name: Postman}
+- {ats: ashby, slug: synthesia, name: Synthesia}
+- {ats: ashby, slug: runway-ml, name: Runway}
+- {ats: greenhouse, slug: descript, name: Descript}
+- {ats: greenhouse, slug: vercel, name: Vercel}
+- {ats: ashby, slug: notion, name: Notion}
+- {ats: greenhouse, slug: webflow, name: Webflow}
+- {ats: greenhouse, slug: cortex, name: Cortex}
+- {ats: greenhouse, slug: capco, name: Capco}

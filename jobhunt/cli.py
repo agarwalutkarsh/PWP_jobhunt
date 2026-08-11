@@ -22,6 +22,7 @@ from .providers import LLMError, resolve
 from .store import Store
 
 ROOT = Path(__file__).resolve().parent.parent
+RESUME_SUFFIXES = (".pdf", ".txt", ".md")
 
 
 def _load_env(path: str = ".env") -> None:
@@ -43,6 +44,25 @@ def _cfg(path: str | Path) -> dict:
     return yaml.safe_load(p.read_text(encoding="utf-8")) or {}
 
 
+def _resolve_resume_path(resume: str) -> tuple[Path | None, str | None]:
+    src = Path(resume)
+    if src.exists():
+        return src, None
+
+    if src.suffix:
+        return None, f"resume not found: {src}"
+
+    matches = [src.with_suffix(suffix) for suffix in RESUME_SUFFIXES
+               if src.with_suffix(suffix).exists()]
+    if len(matches) == 1:
+        return matches[0], None
+    if len(matches) > 1:
+        choices = ", ".join(str(p) for p in matches)
+        return None, f"resume name is ambiguous: {src} ({choices})"
+    tried = ", ".join(src.with_suffix(s).name for s in RESUME_SUFFIXES)
+    return None, f"resume not found: {src} (also tried: {tried})"
+
+
 def _load_profile(cfg: dict, allow_sample: bool) -> dict | None:
     path = Path(cfg.get("profile_file", "profile.json"))
     if path.exists():
@@ -60,9 +80,9 @@ def _load_profile(cfg: dict, allow_sample: bool) -> dict | None:
 
 # ------------------------------------------------------------------ profile --
 def cmd_profile(args) -> int:
-    src = Path(args.resume)
-    if not src.exists():
-        print(f"resume not found: {src}")
+    src, err = _resolve_resume_path(args.resume)
+    if err:
+        print(err)
         return 1
     is_pdf = src.suffix.lower() == ".pdf"
 
